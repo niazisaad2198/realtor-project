@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Flex, Box, Text, Button } from "@chakra-ui/react";
+import { baseUrl, fetchApi } from "../utils/fetchApi";
 
 const Banner = ({
   porpose,
@@ -35,7 +36,8 @@ const Banner = ({
   </Flex>
 );
 
-export default function Home() {
+export default function Home({propertiesForRent, propertiesForSale}) {
+  console.log(propertiesForRent, propertiesForSale);
   return (
     <Box>
       <Banner
@@ -66,4 +68,17 @@ export default function Home() {
       </Flex>
     </Box>
   );
+}
+
+export async function getStaticProps(){
+  const propertyForSale = await fetchApi(`${baseUrl}/properties/list?locationExternalIDs=5002&purpose=for-sale&hitsPerPage=6`)
+  const propertyForRent = await fetchApi(`${baseUrl}/properties/list?locationExternalIDs=5002&purpose=for-rent&hitsPerPage=6`)
+
+  // NextJs will automatically add these props to Home Component.
+  return {
+    props:{
+      propertiesForSale:propertyForSale?.hits,
+      propertiesForRent:propertyForRent?.hits,
+    }
+  }
 }
