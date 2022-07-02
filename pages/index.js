@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Flex, Box, Text, Button } from "@chakra-ui/react";
 import { baseUrl, fetchApi } from "../utils/fetchApi";
+import Property from "../components/Property";
 
 const Banner = ({
   porpose,
@@ -36,7 +37,7 @@ const Banner = ({
   </Flex>
 );
 
-export default function Home({propertiesForRent, propertiesForSale}) {
+export default function Home({ propertiesForRent, propertiesForSale }) {
   console.log(propertiesForRent, propertiesForSale);
   return (
     <Box>
@@ -50,8 +51,10 @@ export default function Home({propertiesForRent, propertiesForSale}) {
         buttonText="Explore Renting"
         imageUrl="https://bayut-production.s3.eu-central-1.amazonaws.com/image/145426814/33973352624c48628e41f2ec460faba4"
       />
-      <Flex flexWrap='wrap'>
-        {/* Fetch properties ( for rent a home) and map over them. */}
+      <Flex flexWrap="wrap">
+        {propertiesForRent.map((property) => (
+          <Property property={property} key={property.id}/>
+        ))}
       </Flex>
       <Banner
         porpose="BUY A HOME"
@@ -63,22 +66,23 @@ export default function Home({propertiesForRent, propertiesForSale}) {
         buttonText="Explore Buying"
         imageUrl="https://bayut-production.s3.eu-central-1.amazonaws.com/image/145426814/33973352624c48628e41f2ec460faba4"
       />
-      <Flex flexWrap='wrap'>
-        {/* Fetch properties ( for buy a home) and map over them. */}
+      <Flex flexWrap="wrap">
+        {propertiesForSale.map((property) => (
+          <Property property={property} key={property.id}/>
+        ))}
       </Flex>
     </Box>
   );
 }
 
-export async function getStaticProps(){
-  const propertyForSale = await fetchApi(`${baseUrl}/properties/list?locationExternalIDs=5002&purpose=for-sale&hitsPerPage=6`)
-  const propertyForRent = await fetchApi(`${baseUrl}/properties/list?locationExternalIDs=5002&purpose=for-rent&hitsPerPage=6`)
-
-  // NextJs will automatically add these props to Home Component.
-  return {
-    props:{
-      propertiesForSale:propertyForSale?.hits,
-      propertiesForRent:propertyForRent?.hits,
-    }
-  }
-}
+ export async function getStaticProps(){
+   const propertyForSale = await fetchApi(`${baseUrl}/properties/list?locationExternalIDs=5002&purpose=for-sale&hitsPerPage=6`)
+   const propertyForRent = await fetchApi(`${baseUrl}/properties/list?locationExternalIDs=5002&purpose=for-rent&hitsPerPage=6`)
+   // NextJs will automatically add these props to Home Component.
+   return {
+     props:{
+       propertiesForSale:propertyForSale?.hits,
+       propertiesForRent:propertyForRent?.hits,
+     }
+   }
+ }
